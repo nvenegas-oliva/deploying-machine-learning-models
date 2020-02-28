@@ -87,7 +87,7 @@ jobs:
             chmod +x ./scripts/publish_model.sh
             ./scripts/publish_model.sh ./packages/regression_model/
 
-  section_9_differential_tests:
+  differential_tests:
     <<: *defaults
     steps:
       - checkout
@@ -105,7 +105,7 @@ jobs:
             pip install -r packages/ml_api/requirements.txt
             py.test -vv packages/ml_api/tests -m differential
 
-  section_10_deploy_to_heroku:
+  deploy_to_heroku:
     <<: *defaults
     steps:
       - checkout
@@ -114,7 +114,7 @@ jobs:
           command: |
             git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master
 
-  section_11_build_and_push_to_heroku_docker:
+  build_and_push_to_heroku_docker:
     <<: *defaults
     steps:
       - checkout
@@ -140,12 +140,12 @@ workflows:
     jobs:
       - test_regression_model
       - test_ml_api
-      - section_9_differential_tests
+      - differential_tests
       - train_and_upload_regression_model:
           requires:
             - test_regression_model
             - test_ml_api
-            - section_9_differential_tests
-      - section_11_build_and_push_to_heroku_docker:
+            - differential_tests
+      - build_and_push_to_heroku_docker:
           requires:
             - train_and_upload_regression_model
